@@ -27,7 +27,6 @@ if uploaded_file is not None and api_key and process_button:
         model="llama3-70b-8192",  # Ajusta el nombre del modelo según el que quieras usar
         api_key=api_key
     )
-    ollama_embeddings = OllamaEmbeddings(api_key=api_key)
     
     # Cargar el PDF
     loader = PyPDFLoader(uploaded_file)
