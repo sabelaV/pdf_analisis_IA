@@ -34,7 +34,11 @@ if groq_api_key:
         splits = text_splitter.split_documents(docs)
     
         # Crear el vectorstore y el recuperador
-        vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+        vectorstore = Chroma.from_documents(
+            documents=splits,
+            embedding=OpenAIEmbeddings(),
+            persist_directory=None  # Configuración en memoria
+        )
         retriever = vectorstore.as_retriever()
     
         # Definir el sistema y prompt de usuario
