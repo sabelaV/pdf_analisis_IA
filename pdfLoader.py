@@ -3,7 +3,7 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain.chains import RetrievalQA
 from langchain.vectorstores import FAISS
 from langchain.prompts import ChatPromptTemplate
-from langchain_groq import ChatGroq
+from langchain.chat_models import ChatGroq
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from io import BytesIO
@@ -25,7 +25,7 @@ if uploaded_file is not None and api_key and process_button:
         # Convertir el archivo PDF cargado en BytesIO
         file_bytes = BytesIO(uploaded_file.read())
 
-        # Cargar el PDF
+        # Cargar el PDF desde el objeto BytesIO
         loader = PyPDFLoader(file_bytes)
         docs = loader.load()
 
