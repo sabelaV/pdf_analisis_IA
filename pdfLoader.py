@@ -70,4 +70,16 @@ if api_key:
     
         # Ejemplo de pregunta al modelo
         question = "What is this article about?"
-        response = rag_chain.invoke({
+        response = rag_chain.invoke({"input": question})
+    
+        # Mostrar resultados en la interfaz
+        st.write("\n---\n")
+        st.write("**Pregunta:** ¿De qué trata este artículo?")
+        st.write("\n---\n")
+        st.write(f"**Respuesta:** {response['answer']}")
+        st.write("\n---\n")
+    
+        st.write("**Mostrar metadatos del documento:**")
+        st.write(response["context"][0].metadata)
+else:
+    st.warning("Por favor, introduce tu clave de API.")
