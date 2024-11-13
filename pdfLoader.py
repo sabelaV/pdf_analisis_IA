@@ -15,10 +15,13 @@ st.write("Por favor, sube un archivo PDF y luego ingresa tu clave de API para co
 
 # Interfaz de carga de archivos PDF y clave de API al mismo tiempo
 uploaded_file = st.file_uploader("Sube un archivo PDF", type="pdf")
-api_key = st.text_input("Introduce tu API Key de Groq", type="password")
+api_key = st.text_input("Introduce tu API Key de Ollama", type="password")
 
-# Continuar solo si ambos, archivo PDF y clave de API, están disponibles
-if uploaded_file is not None and api_key:
+# Botón de procesar
+process_button = st.button("Procesar")
+
+# Continuar solo si ambos, archivo PDF y clave de API están disponibles y el usuario presiona "Procesar"
+if uploaded_file is not None and api_key and process_button:
     # Configurar el modelo de chat y embeddings de Ollama
     chatModel = ChatGroq(
         model="llama3-70b-8192",  # Ajusta el nombre del modelo según el que quieras usar
@@ -77,5 +80,7 @@ if uploaded_file is not None and api_key:
     st.write("**Mostrar metadatos del documento:**")
     st.write(response["context"][0].metadata)
 
-else:
+elif uploaded_file is None or api_key == "":
     st.warning("Por favor, sube un archivo PDF y proporciona tu clave de API para continuar.")
+else:
+    st.info("Haz clic en 'Procesar' para comenzar el análisis.")
