@@ -15,7 +15,7 @@ st.write("Por favor, sube un archivo PDF y luego ingresa tu clave de API para co
 
 # Interfaz de carga de archivos PDF y clave de API al mismo tiempo
 uploaded_file = st.file_uploader("Sube un archivo PDF", type="pdf")
-api_key = st.text_input("Introduce tu API Key de Ollama", type="password")
+api_key = st.text_input("Introduce tu API Key de Groq", type="password")
 
 # Continuar solo si ambos, archivo PDF y clave de API, están disponibles
 if uploaded_file is not None and api_key:
