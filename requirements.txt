@@ -5,4 +5,4 @@ langchain_groq
 langchain_community
 groq
 chromadb
-pyPDF2
+pypdf
