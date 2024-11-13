@@ -8,7 +8,6 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from io import BytesIO
 
-
 # Interfaz de usuario en Streamlit para ingresar la clave de API
 st.title("Análisis de Documentos PDF con LangChain y Ollama")
 st.write("Por favor, sube un archivo PDF y luego ingresa tu clave de API para continuar.")
@@ -23,11 +22,11 @@ process_button = st.button("Procesar")
 # Continuar solo si ambos, archivo PDF y clave de API están disponibles y el usuario presiona "Procesar"
 if uploaded_file is not None and api_key and process_button:
     try:
-        # Convertir el archivo PDF cargado en BytesIO
-        file_bytes = uploaded_file.read()
+        # Convertir el archivo PDF cargado en un objeto BytesIO
+        file_bytes = BytesIO(uploaded_file.read())
 
         # Cargar el PDF desde el objeto BytesIO
-        loader = PyPDFLoader.from_bytes(file_bytes)
+        loader = PyPDFLoader(file_bytes)  # Ahora pasamos el objeto BytesIO
         docs = loader.load()
 
         # Configurar el modelo de chat y embeddings de Ollama
