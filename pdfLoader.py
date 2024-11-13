@@ -1,6 +1,6 @@
 import streamlit as st
 from langchain_community.embeddings import OllamaEmbeddings
-from langchain.chains import create_stuff_documents_chain, create_retrieval_chain
+from langchain.chains import RetrievalQA
 from langchain.vectorstores import FAISS
 from langchain.prompts import ChatPromptTemplate
 from langchain.chat_models import ChatGroq
@@ -42,48 +42,28 @@ if uploaded_file is not None and api_key and process_button:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         splits = text_splitter.split_documents(docs)
 
-        # Generar embeddings para cada fragmento de texto
-        document_embeddings = [{"embedding": ollama_embeddings.embed(text["text"])} for text in splits]
-
         # Crear el índice FAISS
         faiss_index = FAISS.from_documents(splits, ollama_embeddings)
         retriever = faiss_index.as_retriever()
 
-        # Definir el sistema y prompt de usuario
-        system_prompt = (
-            "You are an assistant for question-answering tasks. "
-            "Use the following pieces of retrieved context to answer "
-            "the question. If you don't know the answer, say that you "
-            "don't know. Use three sentences maximum and keep the "
-            "answer concise."
-            "\n\n"
-            "{context}"
+        # Crear la cadena de preguntas y respuestas (QA) con recuperación
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=chatModel, 
+            chain_type="stuff", 
+            retriever=retriever, 
+            verbose=True
         )
-
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", system_prompt),
-                ("human", "{input}"),
-            ]
-        )
-
-        # Crear el encadenamiento de preguntas y respuestas
-        question_answer_chain = create_stuff_documents_chain(chatModel, prompt)
-        rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
         # Ejemplo de pregunta al modelo
         question = "What is this article about?"
-        response = rag_chain.invoke({"input": question})
+        response = qa_chain.run(question)
 
         # Mostrar resultados en la interfaz
         st.write("\n---\n")
         st.write("**Pregunta:** ¿De qué trata este artículo?")
         st.write("\n---\n")
-        st.write(f"**Respuesta:** {response['answer']}")
+        st.write(f"**Respuesta:** {response}")
         st.write("\n---\n")
-
-        st.write("**Mostrar metadatos del documento:**")
-        st.write(response["context"][0].metadata)
 
     except Exception as e:
         st.error(f"Hubo un error: {e}")
