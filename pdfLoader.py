@@ -1,5 +1,12 @@
 import streamlit as st
 from langchain_groq import ChatGroq
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.prompts import ChatPromptTemplate
 
 # Interfaz de usuario en Streamlit para ingresar la clave de API de Groq
 st.title("Análisis de Documentos PDF con LangChain y Groq")
@@ -9,16 +16,11 @@ st.write("Por favor, ingresa tu clave de API de Groq para continuar.")
 groq_api_key = st.text_input("Introduce tu Groq API Key", type="password")
 
 # Continuar solo si la clave de Groq está disponible
-    if groq_api_key:
-    
-    
-    
+if groq_api_key:
+    # Instancia del modelo ChatGroq
     chatModel = ChatGroq(
-    
         model="llama3-70b-8192"  # Ajusta el nombre del modelo según el que quieras usar
-    
     )
-    
     
     # Interfaz de carga de archivos PDF
     uploaded_file = st.file_uploader("Sube un archivo PDF", type="pdf")
@@ -54,7 +56,7 @@ groq_api_key = st.text_input("Introduce tu Groq API Key", type="password")
         )
     
         # Crear el encadenamiento de preguntas y respuestas
-        question_answer_chain = create_stuff_documents_chain(llm, prompt)
+        question_answer_chain = create_stuff_documents_chain(chatModel, prompt)
         rag_chain = create_retrieval_chain(retriever, question_answer_chain)
     
         # Ejemplo de pregunta al modelo
