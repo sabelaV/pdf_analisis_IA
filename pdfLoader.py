@@ -1,3 +1,5 @@
+import streamlit as st
+from groq import Groq
 # Interfaz de usuario en Streamlit para ingresar la clave de API de Groq
 st.title("Análisis de Documentos PDF con LangChain y Groq")
 st.write("Por favor, ingresa tu clave de API de Groq para continuar.")
