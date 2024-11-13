@@ -1,6 +1,7 @@
 streamlit
 requests
 langchain
+langchain_groq
 groq
 chromadb
 pyPDF2
