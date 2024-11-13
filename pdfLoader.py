@@ -14,7 +14,7 @@ st.title("Análisis de Documentos PDF con LangChain y Ollama")
 st.write("Por favor, ingresa tu clave de API para continuar.")
 
 # Pedir clave de API directamente en la interfaz de Streamlit
-api_key = st.text_input("Introduce tu API Key de Ollama", type="password")
+api_key = st.text_input("Introduce tu API Key de Groq", type="password")
 
 # Continuar solo si la clave de API está disponible
 if api_key:
