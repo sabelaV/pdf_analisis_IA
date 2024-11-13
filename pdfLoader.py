@@ -1,27 +1,29 @@
 import streamlit as st
-from langchain_groq import ChatGroq, GroqEmbeddings
+import numpy as np
+from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_chroma import Chroma
+from langchain.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_community.chat_models import OllamaChat
 
-# Interfaz de usuario en Streamlit para ingresar la clave de API de Groq
-st.title("Análisis de Documentos PDF con LangChain y Groq")
-st.write("Por favor, ingresa tu clave de API de Groq para continuar.")
+# Interfaz de usuario en Streamlit para ingresar la clave de API
+st.title("Análisis de Documentos PDF con LangChain y Ollama")
+st.write("Por favor, ingresa tu clave de API para continuar.")
 
-# Pedir clave de API de Groq directamente en la interfaz de Streamlit
-groq_api_key = st.text_input("Introduce tu Groq API Key", type="password")
+# Pedir clave de API directamente en la interfaz de Streamlit
+api_key = st.text_input("Introduce tu API Key de Ollama", type="password")
 
-# Continuar solo si la clave de Groq está disponible
-if groq_api_key:
-    # Configurar el modelo de chat y embeddings de Groq
-    chatModel = ChatGroq(
+# Continuar solo si la clave de API está disponible
+if api_key:
+    # Configurar el modelo de chat y embeddings de Ollama
+    chatModel = OllamaChat(
         model="llama3-70b-8192",  # Ajusta el nombre del modelo según el que quieras usar
-        api_key=groq_api_key
+        api_key=api_key
     )
-    groq_embeddings = GroqEmbeddings(api_key=groq_api_key)
+    ollama_embeddings = OllamaEmbeddings(api_key=api_key)
     
     # Interfaz de carga de archivos PDF
     uploaded_file = st.file_uploader("Sube un archivo PDF", type="pdf")
@@ -34,9 +36,15 @@ if groq_api_key:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         splits = text_splitter.split_documents(docs)
     
-        # Crear el vectorstore y el recuperador con Groq embeddings
-        vectorstore = Chroma.from_documents(documents=splits, embedding=groq_embeddings, persist_directory=None)
-        retriever = vectorstore.as_retriever()
+        # Generar embeddings para cada fragmento de texto
+        document_embeddings = [{"embedding": ollama_embeddings.embed(text["text"])} for text in splits]
+        
+        # Convertir los embeddings a un array de numpy compatible con FAISS
+        embedding_vectors = np.array([doc["embedding"] for doc in document_embeddings])
+        
+        # Crear el índice FAISS
+        faiss_index = FAISS(embedding_vectors, splits)
+        retriever = faiss_index.as_retriever()
     
         # Definir el sistema y prompt de usuario
         system_prompt = (
@@ -62,16 +70,4 @@ if groq_api_key:
     
         # Ejemplo de pregunta al modelo
         question = "What is this article about?"
-        response = rag_chain.invoke({"input": question})
-    
-        # Mostrar resultados en la interfaz
-        st.write("\n---\n")
-        st.write("**Pregunta:** ¿De qué trata este artículo?")
-        st.write("\n---\n")
-        st.write(f"**Respuesta:** {response['answer']}")
-        st.write("\n---\n")
-    
-        st.write("**Mostrar metadatos del documento:**")
-        st.write(response["context"][0].metadata)
-else:
-    st.warning("Por favor, introduce tu clave de API de Groq.")
+        response = rag_chain.invoke({
