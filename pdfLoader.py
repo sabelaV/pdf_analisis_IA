@@ -11,23 +11,25 @@ from langchain_groq import ChatGroq
 
 # Interfaz de usuario en Streamlit para ingresar la clave de API
 st.title("Análisis de Documentos PDF con LangChain y Ollama")
-st.write("Por favor, ingresa tu clave de API para continuar.")
+st.write("Por favor, sube un archivo PDF y luego ingresa tu clave de API para continuar.")
 
-# Pedir clave de API directamente en la interfaz de Streamlit
-api_key = st.text_input("Introduce tu API Key de Groq", type="password")
+# Interfaz de carga de archivos PDF
+uploaded_file = st.file_uploader("Sube un archivo PDF", type="pdf")
 
-# Continuar solo si la clave de API está disponible
-if api_key:
-    # Configurar el modelo de chat y embeddings de Ollama
-    chatModel = ChatGroq(
-        model="llama3-70b-8192",  # Ajusta el nombre del modelo según el que quieras usar
-        api_key=groq_api_key
-    )
-    ollama_embeddings = OllamaEmbeddings(api_key=api_key)
-    
-    # Interfaz de carga de archivos PDF
-    uploaded_file = st.file_uploader("Sube un archivo PDF", type="pdf")
-    if uploaded_file is not None:
+# Continuar solo si el archivo PDF está cargado
+if uploaded_file is not None:
+    # Pedir clave de API después de cargar el PDF
+    api_key = st.text_input("Introduce tu API Key de Ollama", type="password")
+
+    # Continuar solo si la clave de API está disponible
+    if api_key:
+        # Configurar el modelo de chat y embeddings de Ollama
+        chatModel = ChatGroq(
+            model="llama3-70b-8192",  # Ajusta el nombre del modelo según el que quieras usar
+            api_key=api_key
+        )
+        ollama_embeddings = OllamaEmbeddings(api_key=api_key)
+        
         # Cargar el PDF
         loader = PyPDFLoader(uploaded_file)
         docs = loader.load()
@@ -81,5 +83,5 @@ if api_key:
     
         st.write("**Mostrar metadatos del documento:**")
         st.write(response["context"][0].metadata)
-else:
-    st.warning("Por favor, introduce tu clave de API.")
+    else:
+        st.warning("Por favor, introduce tu clave de API.")
