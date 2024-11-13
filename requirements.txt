@@ -1,0 +1,21 @@
+# Streamlit
+streamlit
+
+# LangChain y sus dependencias
+langchain
+langchain_openai
+langchain_chroma
+langchain_community
+langchain_core
+
+chromadb  # Para el vectorstore de Chroma
+PyPDF2
+
+# Procesamiento de archivos PDF
+pypdf2  # Para cargar archivos PDF
+
+# Integración con el modelo Llama 3.2
+llama-cpp-python  # Para interactuar con modelos Llama
+
+# Groq Client SDK (suponiendo que sea necesario para Groq)
+groq-sdk
