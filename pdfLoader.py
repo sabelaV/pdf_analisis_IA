@@ -7,7 +7,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_community.chat_models import OllamaChat
+from langchain_groq import ChatGroq
 
 # Interfaz de usuario en Streamlit para ingresar la clave de API
 st.title("Análisis de Documentos PDF con LangChain y Ollama")
@@ -19,9 +19,9 @@ api_key = st.text_input("Introduce tu API Key de Ollama", type="password")
 # Continuar solo si la clave de API está disponible
 if api_key:
     # Configurar el modelo de chat y embeddings de Ollama
-    chatModel = OllamaChat(
+    chatModel = ChatGroq(
         model="llama3-70b-8192",  # Ajusta el nombre del modelo según el que quieras usar
-        api_key=api_key
+        api_key=groq_api_key
     )
     ollama_embeddings = OllamaEmbeddings(api_key=api_key)
     
