@@ -6,5 +6,4 @@ langchain_community
 groq
 chromadb
 pypdf
-PyPDFLoader
 BytesIO
